@@ -3,6 +3,8 @@ const express = require("express");
 const Dbcon = require("./app/config/db");
 const cors = require("cors");
 const routes = require("./app/routes");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -15,6 +17,17 @@ app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+app.use(cookieParser());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRECT,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, //24hrs
+    },
+  }),
+);
 app.get("/", (req, res) => {
   res.redirect("/products");
 });
