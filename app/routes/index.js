@@ -8,6 +8,7 @@ const editProductRoutes = require("./editProductPage.routes");
 const softDeleteRoutes = require("./softDelete.routes");
 const trashRoutes = require("./trashPage.routes");
 const authRoutes = require("./auth.routes");
+const userRouter = require("./userPage.routes");
 
 router.use("/api", apiRoute);
 router.use("/products", productRoutes);
@@ -17,5 +18,7 @@ router.use("/products", softDeleteRoutes);
 router.use("/products", trashRoutes);
 
 router.use("/auth", authRoutes);
+
+router.use("/userPage", userRouter);
 
 module.exports = router;

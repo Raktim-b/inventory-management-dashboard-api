@@ -6,7 +6,7 @@ class ProductPageController {
     try {
       const products = await ProductModel.find({ isDelete: false });
       res.render("product", {
-        title: "Product",
+        title: "Dashboard",
         data: products,
       });
     } catch (error) {

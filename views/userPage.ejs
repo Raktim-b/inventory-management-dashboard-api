@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/output.css" />
+    <title><%= title %></title>
+</head>
+<body class="bg-white min-h-screen font-sans">
+
+  <div class="max-w-350 w-full mx-auto px-5 py-8">
+
+    <div class="flex gap-14">
+
+      <!-- LEFT SIDEBAR -->
+      <div class="w-70  rounded-2xl  h-fit sticky top-5">
+
+        <h2 class="text-2xl font-semibold mb-6">
+          Filters
+        </h2>
+
+        <!-- SEARCH -->
+        <form action="/products/filter" method="GET" class="relative w-full">
+            <input
+              type="text"
+              name="search"
+              value="<%= search %>"
+              placeholder="SEARCH..."
+              class="w-full bg-gray-200 rounded-lg pl-5 pr-12 py-2 text-sm outline-none placeholder-gray-500"
+            />
+
+            <!-- Search Button -->
+            <button
+              type="submit"
+              class="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </form>
+
+      
+
+        <!-- FILTER -->
+        <div class="mt-5">
+
+          <h3 class="font-semibold text-gray-800 mb-3">
+            Category
+          </h3>
+
+          <div class="flex flex-col gap-2 text-sm">
+
+            <a
+              href="/products/filter?category=men"
+              class="hover:text-black text-gray-600"
+            >
+              Men
+            </a>
+
+            <a
+              href="/products/filter?category=women"
+              class="hover:text-black text-gray-600"
+            >
+              Women
+            </a>
+
+            <a
+              href="/products/filter?category=unisex"
+              class="hover:text-black text-gray-600"
+            >
+              Unisex
+            </a>
+
+          </div>
+        </div>
+
+      </div>
+<div class="flex-1">
+
+  <!-- TOP BAR -->
+  <div class="flex items-center justify-between mb-8">
+
+    <!-- LEFT -->
+    <div>
+      <h1 class="text-2xl font-semibold text-black">
+
+        <% if(search) { %>
+
+          Search Results For :
+          "<span><%= search %></span>"
+
+        <% } else { %>
+
+          All Products
+
+        <% } %>
+
+      </h1>
+
+      <p class="text-gray-400 mt-1">
+        <%= data.length %> Products
+      </p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="flex items-center gap-3">
+
+      <!-- SORT -->
+       <div class="relative">
+            <button
+              onclick="toggleSort()"
+              class="inline-flex cursor-pointer items-center gap-1 border border-gray-300  font-medium px-4 py-3 rounded-lg"
+            >
+             <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 6h13M3 12h9M3 18h5M16 6l2-2 2 2M18 4v16"
+            />
+          </svg>
+              <span class="text-gray-500 text-sm">
+            Sort by 
+          </span>
+
+              <!-- Sort Icon -->
+              <svg width="14" height="14" viewBox="0 0 24 24">
+                <path
+                  d="M6 9L12 15L18 9"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+            </button>
+
+            <div
+              id="sortMenu"
+              class="hidden absolute w-40 bg-white shadow rounded-lg mt-1"
+            >
+              <a href="/products" class="block! px-4 py-2 hover:bg-gray-200">
+                Default
+              </a>
+              <a
+                href="/products/filter?sort=price_asc"
+                class="block! px-4 py-2 hover:bg-gray-200"
+              >
+                Price Low → High
+              </a>
+
+              <a
+                href="/products/filter?sort=price_desc"
+                class="block! px-4 py-2 hover:bg-gray-200"
+              >
+                Price High → Low
+              </a>
+
+              <a
+                href="/products/filter?sort=name_asc"
+                class="block! px-4 py-2 hover:bg-gray-200"
+              >
+                Name A → Z
+              </a>
+
+              <a
+                href="/products/filter?sort=name_desc"
+                class="block! px-4 py-2 hover:bg-gray-200"
+              >
+                Name Z → A
+              </a>
+            </div>
+          </div>
+
+    
+
+    </div>
+
+  </div>
+      <!-- PRODUCT GRID -->
+      <div class="flex-1">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-5">
+
+          <% data.forEach((element) => { %>
+
+          <!-- CARD -->
+          <div class=" overflow-hidden transition duration-300">
+
+            <!-- IMAGE -->
+            <div class="h-120 relative overflow-hidden">
+              <img
+                src="<%= element.image %>"
+                alt="<%= element.name %>"
+                class="w-full h-full rounded-lg object-cover hover:scale-105 transition duration-500"
+              />
+<div class="absolute left-2.5 top-2.5 bg-yellow-300 py-px px-2 rounded-md"><span class="text-gray-700 text-xs uppercase font-semibold">
+                  <%= element.category %>
+                </span></div>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="p-4">
+
+              <!-- NAME -->
+              <h2 class="font-semibold text-gray-900 line-clamp-1">
+                <%= element.name %>
+              </h2>
+<!-- DESC -->
+              <p class="text-sm font-medium text-[#8f98a9] mt-3 line-clamp-3">
+                <%= element.desc %>
+              </p>
+              <!-- PRICE -->
+              <p class="text-lg font-semibold mt-2">
+                ₹<%= element.price.toLocaleString() %>
+              </p>
+
+
+              <!-- COLOR -->
+              <p class="text-sm text-gray-500 mt-1">
+                Color:
+                <span class="text-black font-medium">
+                  <% element.color.forEach((c, index) => { %>
+                    <%= c %><%= index !== element.color.length - 1 ? "," : "" %>
+                  <% }) %>
+                </span>
+              </p>
+
+              <!-- STOCK -->
+              <p class="text-sm text-gray-500 mt-1">
+                Stock:
+                <span class="text-black font-medium">
+                  <%= element.stock %>
+                </span>
+              </p>
+
+              
+
+            </div>
+
+          </div>
+
+          <% }) %>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+<script src="/script/filterMenu.js"></script>
+</body>
+</html>

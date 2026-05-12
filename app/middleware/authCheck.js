@@ -1,18 +1,23 @@
 const jwt = require("jsonwebtoken");
+
 const AuthCheck = (req, res, next) => {
-  if (req.cookies && req.cookies.token) {
+  try {
+    if (!req.cookies || !req.cookies.token) {
+      return res.redirect("/auth/login");
+    }
+
     jwt.verify(req.cookies.token, process.env.JWT_SECRET, (err, data) => {
       if (err) {
-        return res.status(400).json({
-          status: false,
-          message: "invalid token",
-        });
+        return res.redirect("/auth/login");
       }
+
       req.user = data;
+
       next();
     });
-  } else {
-    next();
+  } catch (error) {
+    console.log(error);
   }
 };
+
 module.exports = AuthCheck;

@@ -3,18 +3,6 @@ const httpStatusCode = require("../util/httpStatusCode");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 class AuthController {
-  async CheckAuth(req, res, next) {
-    try {
-      if (req.user) {
-        next();
-      } else {
-        res.redirect("/auth/login");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   async registrationPage(req, res) {
     res.render("registration", {
       title: "Registration",
@@ -115,13 +103,18 @@ class AuthController {
             id: checkUser._id,
             name: checkUser.name,
             email: checkUser.email,
+            role: checkUser.role,
           },
           process.env.JWT_SECRET,
           { expiresIn: "1d" },
         );
         if (token) {
           res.cookie("token", token);
-          return res.redirect("/products");
+          if (checkUser.role === "admin") {
+            return res.redirect("/products");
+          } else {
+            return res.redirect("/userPage");
+          }
         } else {
           return res.redirect("/auth/login");
           console.log("invalid credentials");
