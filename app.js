@@ -29,7 +29,7 @@ app.use(
   }),
 );
 app.get("/", (req, res) => {
-  res.redirect("/products");
+  res.redirect("/auth/login");
 });
 
 app.use((req, res, next) => {
