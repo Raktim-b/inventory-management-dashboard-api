@@ -224,28 +224,27 @@
       <div class="grid grid-cols-4 gap-3 mb-6">
         <div class="bg-white border border-gray-100 rounded-xl px-5 py-4">
           <p class="text-xs text-gray-400 mb-1">Total products</p>
-          <p class="text-2xl font-medium text-gray-900"><%= data.length %></p>
+          <p class="text-2xl font-medium text-gray-900"><%= totalProducts %></p>
           <p class="text-xs text-gray-400 mt-0.5">in inventory</p>
         </div>
         <div class="bg-white border border-gray-100 rounded-xl px-5 py-4">
           <p class="text-xs text-gray-400 mb-1">Total Stock</p>
           <p class="text-2xl font-medium text-gray-900">
-            <%= data.reduce((t,s) => t + s.stock, 0) %>
+            <%= totalStock %>
           </p>
           <p class="text-xs text-gray-400 mt-0.5">in inventory</p>
         </div>
         <div class="bg-white border border-gray-100 rounded-xl px-5 py-4">
           <p class="text-xs text-gray-400 mb-1">Total value</p>
           <p class="text-2xl font-medium text-gray-900">
-            ₹<%= data.reduce((s, p) => s + p.price, 0).toLocaleString() %>
+            ₹<%= totalValue.toLocaleString("en-IN") %>
           </p>
           <p class="text-xs text-gray-400 mt-0.5">across all listings</p>
         </div>
         <div class="bg-white border border-gray-100 rounded-xl px-5 py-4">
           <p class="text-xs text-gray-400 mb-1">Avg price</p>
           <p class="text-2xl font-medium text-gray-900">
-            ₹<%= data.length ? Math.round(data.reduce((s, p) => s + p.price, 0)
-            / data.length).toLocaleString() : 0 %>
+            ₹<%=avgPrice.toLocaleString("en-IN") %>
           </p>
           <p class="text-xs text-gray-400 mt-0.5">per product</p>
         </div>
