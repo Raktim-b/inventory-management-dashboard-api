@@ -2,6 +2,8 @@ const RegistrationModel = require("../model/registration.db");
 const httpStatusCode = require("../util/httpStatusCode");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const sendEmail = require("../util/sendEmail");
+const emailVerificationModel = require("../model/otpModel");
 class AuthController {
   async registrationPage(req, res) {
     res.render("registration", {
@@ -39,7 +41,7 @@ class AuthController {
         //   success: false,
         //   message: "user already exist",
         // });
-        console.log("user already exist");
+        alert("user already exist");
         return res.redirect("/auth/registration");
       }
       const salt = await bcrypt.genSalt(10);
@@ -56,6 +58,7 @@ class AuthController {
         userData.public_id = req.file.filename;
       }
       const result = await userData.save();
+      await sendEmail(req, result);
       if (result) {
         // return res.status(httpStatusCode.CREATED).json({
         //   success: true,
@@ -63,7 +66,7 @@ class AuthController {
         //   data: result,
         // });
         console.log("user created successfully", result);
-        return res.redirect("/auth/login");
+        return res.redirect("/auth/verifyPage");
       }
     } catch (error) {
       return res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
@@ -87,6 +90,10 @@ class AuthController {
         //   error: "Invalid user ",
         // });
         console.log("Invalid user");
+        return res.redirect("/auth/login");
+      }
+      if (!checkUser.isVerified) {
+        console.log("User not verified");
         return res.redirect("/auth/login");
       }
       const checkPassword = await bcrypt.compare(password, checkUser.password);
@@ -120,6 +127,62 @@ class AuthController {
           console.log("invalid credentials");
         }
       }
+    } catch (error) {
+      return res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+  async verifyPage(req, res) {
+    res.render("verifyPage", {
+      title: "Verify Page",
+    });
+  }
+
+  async verify(req, res) {
+    try {
+      const { email, otp } = req.body;
+      if (!email || !otp) {
+        console.log("All fields are required");
+        return res.redirect("/auth/verifyPage");
+      }
+      const existingUser = await RegistrationModel.findOne({ email });
+      if (!existingUser) {
+        console.log("Invalid credentials");
+        return res.redirect("/auth/verifyPage");
+      }
+      if (existingUser.isVerified) {
+        console.log("Email already verified");
+        return res.redirect("/auth/login");
+      }
+      const emailVerification = await emailVerificationModel.findOne({
+        userId: existingUser._id,
+        otp,
+      });
+      if (!emailVerification) {
+        if (!existingUser.isVerified) {
+          await sendEmail(req, existingUser);
+          console.log("Invalid OTP, new OTP sent to your email");
+          return res.redirect("/auth/login");
+        }
+        console.log("Invalid OTP");
+        return res.redirect("/auth/login");
+      }
+      const currentTime = new Date();
+      const expirationTime = new Date(
+        emailVerification.createdAt.getTime() + 15 * 60 * 1000,
+      );
+      if (currentTime > expirationTime) {
+        // OTP expired, send new OTP
+        await sendEmail(req, existingUser);
+        console.log("OTP expired, new OTP sent to your email");
+        return res.redirect("/auth/login");
+      }
+      existingUser.isVerified = true;
+      await existingUser.save();
+      await emailVerificationModel.deleteMany({ userId: existingUser._id });
+      res.redirect("/auth/login");
     } catch (error) {
       return res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
         success: false,

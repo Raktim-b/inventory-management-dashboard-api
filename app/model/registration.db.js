@@ -25,6 +25,10 @@ const RegistrationSchema = new Schema({
     enum: ["user", "admin"],
     default: "user",
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   image: {
     type: String,
     // required: false,

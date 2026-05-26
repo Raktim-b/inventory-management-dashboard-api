@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/output.css" />
+    <title><%= title %></title>
+  </head>
+
+  <body
+    class="bg-gray-100 min-h-screen text-sm flex items-center justify-center font-sans"
+  >
+    <div class="max-w-md w-full mx-auto px-6 py-16">
+      <!-- FORM CARD -->
+      <div class="bg-white border border-gray-100 rounded-xl p-6">
+        
+        <form action="/auth/verify" method="POST" class="space-y-5">
+          
+          <!-- HEADER -->
+          <div class="mb-8">
+            <h1 class="text-2xl font-medium text-gray-900">
+              Verify OTP
+            </h1>
+
+            <p class="text-sm text-gray-500 mt-1">
+              Enter your email and OTP
+            </p>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="text-sm text-gray-500">
+              Email
+            </label>
+
+            <input
+              name="email"
+              type="email"
+              required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+
+          <!-- OTP -->
+          <div>
+            <label class="text-sm text-gray-500">
+              OTP
+            </label>
+
+            <input
+              name="otp"
+              type="text"
+              required
+              placeholder="Enter OTP"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+
+          <!-- Submit -->
+          <div class="pt-2">
+            <button
+              class="w-full bg-blue-500 hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium transition"
+            >
+              Verify Email
+            </button>
+          </div>
+
+          <!-- Success Message -->
+          <% if (typeof success !== 'undefined') { %>
+          <div class="text-green-700 my-4 text-[12px]">
+            <%= success %>
+          </div>
+          <% } %>
+
+          <!-- Error Message -->
+          <% if (typeof error !== 'undefined') { %>
+          <div class="text-red-700 my-4 text-[12px]">
+            <%= error %>
+          </div>
+          <% } %>
+
+          <!-- Login Link -->
+          <p class="text-center text-sm text-gray-500">
+            Already verified?
+            <a href="/auth/login" class="text-blue-500 hover:underline">
+              Login
+            </a>
+          </p>
+
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

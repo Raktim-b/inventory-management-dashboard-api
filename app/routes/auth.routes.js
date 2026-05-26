@@ -13,4 +13,7 @@ authRouter.post(
 authRouter.get("/login", authController.loginPage);
 authRouter.post("/login/create", authController.logIn);
 
+authRouter.get("/verifyPage", authController.verifyPage);
+authRouter.post("/verify", authController.verify);
+
 module.exports = authRouter;
