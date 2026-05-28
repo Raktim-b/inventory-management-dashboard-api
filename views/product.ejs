@@ -18,7 +18,7 @@
           </p>
         </div>
         <div class="flex gap-2">
-          <form action="/products/filter" method="GET" class="relative w-90">
+          <form action="/products" method="GET" class="relative w-90">
             <input
               type="text"
               name="search"
@@ -73,28 +73,28 @@
                 Default
               </a>
               <a
-                href="/products/filter?sort=price_asc"
+                href="/products?sort=price_asc"
                 class="block! px-4 py-2 hover:bg-gray-200"
               >
                 Price Low → High
               </a>
 
               <a
-                href="/products/filter?sort=price_desc"
+                href="/products?sort=price_desc"
                 class="block! px-4 py-2 hover:bg-gray-200"
               >
                 Price High → Low
               </a>
 
               <a
-                href="/products/filter?sort=name_asc"
+                href="/products?sort=name_asc"
                 class="block! px-4 py-2 hover:bg-gray-200"
               >
                 Name A → Z
               </a>
 
               <a
-                href="/products/filter?sort=name_desc"
+                href="/products?sort=name_desc"
                 class="block! px-4 py-2 hover:bg-gray-200"
               >
                 Name Z → A
@@ -133,7 +133,7 @@
               </a>
 
               <a
-                href="/products/filter?category=men"
+                href="/products?category=men"
                 onclick="setFilter('Men')"
                 class="block! px-4 py-2 hover:bg-gray-200 font-medium"
               >
@@ -141,21 +141,21 @@
               </a>
 
               <a
-                href="/products/filter?category=women"
+                href="/products?category=women"
                 onclick="setFilter('Women')"
                 class="block! px-4 py-2 hover:bg-gray-200 font-medium"
               >
                 Women
               </a>
               <a
-                href="/products/filter?category=unisex"
+                href="/products?category=unisex"
                 onclick="setFilter('Unisex')"
                 class="block! px-4 py-2 hover:bg-gray-200 font-medium"
               >
                 Unisex
               </a>
               <a
-                href="/products/filter?stock=low"
+                href="/products?stock=low"
                 onclick="setFilter('Low Stock')"
                 class="block! px-4 py-2 hover:bg-gray-200 font-medium"
               >
@@ -197,7 +197,7 @@
             href="/products/logout"
             class="inline-flex! items-center gap-1 bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-3 rounded-lg transition"
           >
-            Logout 
+            Logout
             <svg
               width="16px"
               height="16px"
@@ -229,9 +229,7 @@
         </div>
         <div class="bg-white border border-gray-100 rounded-xl px-5 py-4">
           <p class="text-xs text-gray-400 mb-1">Total Stock</p>
-          <p class="text-2xl font-medium text-gray-900">
-            <%= totalStock %>
-          </p>
+          <p class="text-2xl font-medium text-gray-900"><%= totalStock %></p>
           <p class="text-xs text-gray-400 mt-0.5">in inventory</p>
         </div>
         <div class="bg-white border border-gray-100 rounded-xl px-5 py-4">
@@ -321,7 +319,7 @@
           >
             <!-- SL -->
             <div class="flex justify-center font-mono text-gray-400">
-              <%= index + 1 %>
+              <%= ((currentPage - 1) * 5) + index + 1 %>
             </div>
 
             <!-- ID -->
@@ -434,6 +432,36 @@
 
           <% }) %>
         </div>
+      </div>
+      <div class="flex justify-center text-xs items-center gap-2 mt-5">
+        <% if(currentPage > 1) { %>
+
+        <a
+          href="/products?page=<%= currentPage - 1 %>"
+          class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+        >
+          Prev
+        </a>
+
+        <% } %> <% for(let i = 1; i <= totalPages; i++) { %>
+
+        <a
+          href="/products?page=<%= i %>"
+          class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300' %>"
+        >
+          <%= i %>
+        </a>
+
+        <% } %> <% if(currentPage < totalPages) { %>
+
+        <a
+          href="/products?page=<%= currentPage + 1 %>"
+          class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+        >
+          Next
+        </a>
+
+        <% } %>
       </div>
     </div>
 

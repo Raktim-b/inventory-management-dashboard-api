@@ -11,5 +11,5 @@ productRouter.get(
   ProductPageController.productPage,
 );
 productRouter.get("/logout", AuthCheck, authController.logOut);
-productRouter.get("/filter", ProductPageController.filterProduct);
+// productRouter.get("/filter", ProductPageController.filterProduct);
 module.exports = productRouter;
