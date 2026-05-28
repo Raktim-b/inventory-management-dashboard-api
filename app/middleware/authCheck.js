@@ -2,17 +2,17 @@ const jwt = require("jsonwebtoken");
 
 const AuthCheck = (req, res, next) => {
   try {
-    if (!req.cookies || !req.cookies.token) {
-      return res.redirect("/auth/login");
+    if (!req.cookies || !req.cookies.accessToken) {
+      return res.redirect("/auth/refresh-token");
     }
-
-    jwt.verify(req.cookies.token, process.env.JWT_SECRET, (err, data) => {
+    jwt.verify(req.cookies.accessToken, process.env.JWT_SECRET, (err, data) => {
       if (err) {
+        if (err.name === "TokenExpiredError") {
+          return res.redirect("/auth/refresh-token");
+        }
         return res.redirect("/auth/login");
       }
-
       req.user = data;
-
       next();
     });
   } catch (error) {

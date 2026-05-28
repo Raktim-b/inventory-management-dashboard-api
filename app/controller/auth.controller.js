@@ -2,6 +2,7 @@ const RegistrationModel = require("../model/registration.db");
 const httpStatusCode = require("../util/httpStatusCode");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const sendEmail = require("../util/sendEmail");
 const emailVerificationModel = require("../model/otpModel");
 class AuthController {
@@ -105,7 +106,7 @@ class AuthController {
         console.log("Wrong password");
         return res.redirect("/auth/login");
       } else {
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
           {
             id: checkUser._id,
             name: checkUser.name,
@@ -113,18 +114,40 @@ class AuthController {
             role: checkUser.role,
           },
           process.env.JWT_SECRET,
-          { expiresIn: "1d" },
+          { expiresIn: "10m" },
         );
-        if (token) {
-          res.cookie("token", token);
+        const refreshToken = jwt.sign(
+          {
+            id: checkUser._id,
+            name: checkUser.name,
+            email: checkUser.email,
+            role: checkUser.role,
+          },
+          process.env.JWT_REFRESH_SECRET,
+          { expiresIn: "7d" },
+        );
+        const hashedRefreshToken = crypto
+          .createHash("sha256")
+          .update(refreshToken)
+          .digest("hex");
+        checkUser.refreshToken = hashedRefreshToken;
+        await checkUser.save();
+        if (accessToken && refreshToken) {
+          res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+          });
+
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+          });
           if (checkUser.role === "admin") {
             return res.redirect("/products");
           } else {
             return res.redirect("/userPage");
           }
         } else {
-          return res.redirect("/auth/login");
           console.log("invalid credentials");
+          return res.redirect("/auth/login");
         }
       }
     } catch (error) {
@@ -134,12 +157,58 @@ class AuthController {
       });
     }
   }
+  async refreshToken(req, res) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        console.log("Refresh token missing");
+        return res.redirect("/auth/login");
+      }
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const user = await RegistrationModel.findById(decoded.id);
+      if (!user) {
+        console.log("User not found");
+        return res.redirect("/auth/login");
+      }
+      const hashedRefreshToken = crypto
+        .createHash("sha256")
+        .update(refreshToken)
+        .digest("hex");
+      if (user.refreshToken !== hashedRefreshToken) {
+        console.log("Invalid refresh token");
+        return res.redirect("/auth/login");
+      }
+      const newAccessToken = jwt.sign(
+        {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "15m",
+        },
+      );
+      res.cookie("accessToken", newAccessToken, {
+        httpOnly: true,
+      });
+
+      if (user.role === "admin") {
+        return res.redirect("/products");
+      } else {
+        return res.redirect("/userPage");
+      }
+    } catch (error) {
+      console.log(error.message);
+      return res.redirect("/auth/login");
+    }
+  }
   async verifyPage(req, res) {
     res.render("verifyPage", {
       title: "Verify Page",
     });
   }
-
   async verify(req, res) {
     try {
       const { email, otp } = req.body;
