@@ -42,7 +42,7 @@ class AuthController {
         //   success: false,
         //   message: "user already exist",
         // });
-        alert("user already exist");
+        console.log("user already exist");
         return res.redirect("/auth/registration");
       }
       const salt = await bcrypt.genSalt(10);
