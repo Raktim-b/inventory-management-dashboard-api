@@ -526,3 +526,6 @@ This project demonstrates practical experience with:
 Unlike a basic CRUD API, this project combines a powerful backend with a fully functional admin dashboard, providing a practical example of how inventory management systems used by businesses and e-commerce platforms can be built.
 
 If you found this project helpful, consider giving it a ⭐ **Star** on GitHub!
+<p align="center">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:F7DF1E,50:FACC15,100:F59E0B&height=120&section=footer"/>
+</p>
