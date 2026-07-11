@@ -1,4 +1,6 @@
-# 🛍️ Product Management Dashboard
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:F7DF1E,50:FACC15,100:F59E0B&height=220&section=header&text=📦%20Product%20Management%20Dashboard&fontSize=40&fontColor=000000&animation=fadeIn&fontAlignY=38"/>
+</p>
 
 > A modern **Product Management Dashboard** built with **Node.js, Express.js, MongoDB, EJS, and Tailwind CSS** that enables businesses to efficiently manage products through a user-friendly web interface. The application includes authentication, email verification, product management, soft delete, search, filtering, sorting, and an interactive admin dashboard.
 
