@@ -23,19 +23,19 @@ class AuthController {
 
         return res.redirect("/auth/registration");
       }
-      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+      // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
 
-      if (!passwordRegex.test(password)) {
-        // return res.status(httpStatusCode.BAD_REQUEST).json({
-        //   success: false,
-        //   message:
-        //     "Password must contain at least one letter and one number and be at least 6 characters long",
-        // });
-        console.log(
-          "Password must contain at least one letter and one number and be at least 6 characters long",
-        );
-        return res.redirect("/auth/registration");
-      }
+      // if (!passwordRegex.test(password)) {
+      //   // return res.status(httpStatusCode.BAD_REQUEST).json({
+      //   //   success: false,
+      //   //   message:
+      //   //     "Password must contain at least one letter and one number and be at least 6 characters long",
+      //   // });
+      //   console.log(
+      //     "Password must contain at least one letter and one number and be at least 6 characters long",
+      //   );
+      //   return res.redirect("/auth/registration");
+      // }
       const existUser = await RegistrationModel.findOne({ email });
       if (existUser) {
         // return res.status(httpStatusCode.BAD_REQUEST).json({
@@ -114,7 +114,7 @@ class AuthController {
             role: checkUser.role,
           },
           process.env.JWT_SECRET,
-          { expiresIn: "10m" },
+          { expiresIn: "40m" },
         );
         const refreshToken = jwt.sign(
           {
@@ -187,7 +187,7 @@ class AuthController {
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "15m",
+          expiresIn: "40m",
         },
       );
       res.cookie("accessToken", newAccessToken, {

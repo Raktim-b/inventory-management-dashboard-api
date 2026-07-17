@@ -23,7 +23,7 @@ class AddProductPageController {
           message: "All fields are required",
         });
       }
-      const product = await ProductDetails({
+      const product = new ProductDetails({
         name,
         size,
         price,
@@ -37,9 +37,10 @@ class AddProductPageController {
         product.public_id = req.file.filename;
       }
       const result = await product.save();
-      if (result) {
-        return res.redirect("/products");
-      }
+      const io = req.app.get("io");
+      io.emit("newProduct", result);
+
+      return res.redirect("/products");
     } catch (error) {
       return res.status(httpStatusCode.INTERNAL_SERVER_ERROR).json({
         success: false,

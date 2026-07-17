@@ -13,6 +13,7 @@ const AuthCheck = (req, res, next) => {
         return res.redirect("/auth/login");
       }
       req.user = data;
+      console.log("Decoded JWT:", req.user);
       next();
     });
   } catch (error) {

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/output.css" />
+    <script src="/socket.io/socket.io.js"></script>
     <title><%= title %></title>
 </head>
 <body class="bg-white min-h-screen font-sans">
@@ -121,6 +122,58 @@
 
     <!-- RIGHT -->
     <div class="flex items-center gap-3">
+      <div class="relative">
+
+    <button
+    id="notificationBtn"
+    class="relative flex items-center justify-center w-11 h-11 rounded-full hover:bg-gray-100 transition cursor-pointer"
+>
+
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+    >
+        <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 01-3.46 0"/>
+    </svg>
+
+    <span
+        id="notificationCount"
+        class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[11px] font-semibold rounded-full min-w-5 h-5 px-1 flex items-center justify-center shadow"
+    >
+        0
+    </span>
+
+</button>
+
+ <div
+    id="notificationDropdown"
+    class="hidden absolute right-0 top-14 w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[9999] overflow-hidden"
+>
+
+    <!-- Header -->
+    <div class="px-5 py-4  bg-gray-50">
+    <h3 class="font-semibold text-lg">
+        Notifications
+    </h3>
+</div>
+
+<div
+    id="notificationList"
+    class="max-h-96 overflow-y-auto"
+>
+    <div class="text-center text-gray-400 py-6">
+        No notifications
+    </div>
+</div>
+
+</div>
+
+</div>
 <a
             href="/products/logout"
             class="inline-flex! items-center gap-1 bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-3 rounded-lg transition"
@@ -225,7 +278,7 @@
       <!-- PRODUCT GRID -->
       <div class="flex-1">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-5">
+        <div  id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-5">
 
           <% data.forEach((element) => { %>
 
@@ -294,6 +347,153 @@
     </div>
 
   </div>
+<script>
+const socket = io();
+
+let count = 0;
+
+const badge = document.getElementById("notificationCount");
+const dropdown = document.getElementById("notificationDropdown");
+const button = document.getElementById("notificationBtn");
+const productGrid = document.getElementById("productGrid");
+
+const notificationList = document.getElementById("notificationList");
+const notificationCountText = document.getElementById("notificationCountText");
+
+socket.on("connect", () => {
+    console.log("Socket Connected:", socket.id);
+});
+
+socket.on("newProduct", (product) => {
+
+ 
+
+    // ==========================
+    // Notification Badge
+    // ==========================
+
+   count++;
+
+badge.classList.remove("hidden");
+badge.innerText = count;
+
+if (count === 1) {
+    notificationList.innerHTML = "";
+}
+
+// ==========================
+// Notification Item
+// ==========================
+
+notificationList.insertAdjacentHTML("afterbegin", `
+    <div class="p-4 border-b hover:bg-gray-50 transition">
+
+        <p class="font-semibold text-gray-800">
+            ${product.name}
+        </p>
+
+        <p class="text-sm text-gray-500 mt-1">
+            ₹${Number(product.price).toLocaleString()}
+        </p>
+
+        <p class="text-xs text-gray-400 mt-1">
+            ${product.category}
+        </p>
+
+    </div>
+`);
+
+    // ==========================
+    // Product Card
+    // ==========================
+
+    const card = `
+        <div class="overflow-hidden transition duration-300">
+
+            <div class="h-120 relative overflow-hidden">
+
+                <img
+                    src="${product.image}"
+                    class="w-full h-full rounded-lg object-cover hover:scale-105 transition duration-500"
+                />
+
+                <div class="absolute left-2.5 top-2.5 bg-yellow-300 py-px px-2 rounded-md">
+                    <span class="text-gray-700 text-xs uppercase font-semibold">
+                        ${product.category}
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="p-4">
+
+                <h2 class="font-semibold text-gray-900">
+                    ${product.name}
+                </h2>
+
+                <p class="text-sm font-medium text-[#8f98a9] mt-3 line-clamp-3">
+                    ${product.desc || ""}
+                </p>
+
+                <p class="text-lg font-semibold mt-2">
+                    ₹${Number(product.price).toLocaleString()}
+                </p>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Color:
+                    <span class="text-black font-medium">
+                        ${
+                            Array.isArray(product.color)
+                                ? product.color.join(", ")
+                                : product.color
+                        }
+                    </span>
+                </p>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Stock:
+                    <span class="text-black font-medium">
+                        ${product.stock}
+                    </span>
+                </p>
+
+            </div>
+
+        </div>
+    `;
+
+    productGrid.insertAdjacentHTML("afterbegin", card);
+
+});
+
+button.addEventListener("click", (e) => {
+
+    e.stopPropagation();
+
+    dropdown.classList.toggle("hidden");
+
+    count = 0;
+
+    badge.classList.add("hidden");
+
+    badge.innerText = "";
+
+    
+
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", (e) => {
+
+    if (
+        !button.contains(e.target) &&
+        !dropdown.contains(e.target)
+    ) {
+        dropdown.classList.add("hidden");
+    }
+
+});
+</script>
 <script src="/script/filterMenu.js"></script>
 </body>
 </html>
